@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'archive.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() {
-  runApp(const frontPage());
+  runApp(mainPage());
 }
 
-class frontPage extends StatelessWidget {
-  const frontPage({Key? key}) : super(key: key);
+class mainPage extends StatefulWidget {
+
+  mainPage() : super();
+
+  @override
+  frontPage createState() => frontPage();
+}
+
+class frontPage extends State<mainPage> {
+
+  int highlightedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +52,21 @@ class frontPage extends StatelessWidget {
               icon: Icon(Icons.search)
             )
           ],
+          currentIndex: highlightedIndex,
+          onTap: (int index) {      
+            setState(() {
+              highlightedIndex = index;
+            });
+            if(highlightedIndex == 0) {
+              
+              //Record record = choose.pickImage(source: ImageSource.gallery) as Record;
+              ImagePicker().pickImage(source: ImageSource.gallery).then((chosenImage){
+                //Record bytes = chosenImage;
+                //uploadScannedRecord(bytes); 
+              });
+                    
+            } 
+          }
         ),
       ),
     );
