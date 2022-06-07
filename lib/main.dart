@@ -1,3 +1,5 @@
+import 'dart:ffi';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'archive.dart';
@@ -5,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(mainPage());
 }
 
@@ -25,7 +28,7 @@ class frontPage extends State<mainPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blueGrey.shade100,
         appBar: AppBar(
           titleTextStyle: GoogleFonts.dekko(
               fontSize: 23,
@@ -39,7 +42,7 @@ class frontPage extends State<mainPage> {
               icon: Icon(Icons.sort),
             ),
           ],
-          backgroundColor: Colors.amberAccent.shade700,
+          backgroundColor: Colors.black,
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
@@ -53,22 +56,25 @@ class frontPage extends State<mainPage> {
             )
           ],
           currentIndex: highlightedIndex,
-          onTap: (int index) {      
+          onTap: (int index) {         
             setState(() {
               highlightedIndex = index;
             });
             if(highlightedIndex == 0) {
-              
-              //Record record = choose.pickImage(source: ImageSource.gallery) as Record;
-              ImagePicker().pickImage(source: ImageSource.gallery).then((chosenImage){
-                //Record bytes = chosenImage;
-                //uploadScannedRecord(bytes); 
-              });
-                    
-            } 
-          }
+               selectImage();
+              }
+            }
+          
         ),
       ),
     );
   }
+}
+
+Future selectImage() async {
+  var tempImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+  File tempImageToFile = File(tempImage!.path);
+  Uint8List imageToBytes = tempImageToFile.readAsBytesSync();
+  Record record = Record(archiveID: 0, scannedRecord: imageToBytes);
+  uploadScannedRecord(record);
 }

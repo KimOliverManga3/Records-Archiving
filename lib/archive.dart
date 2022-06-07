@@ -1,8 +1,7 @@
+import 'dart:convert';
 import 'dart:typed_data';
-import 'package:image_picker/image_picker.dart';
-
 import 'dbCon.dart';
-import 'dart:io';
+import 'package:flutter/material.dart';
 
 
 class Record {
@@ -18,14 +17,13 @@ class Record {
  }
 
   Map<String, dynamic> toMap() => {
-   "archiveId": archiveID,
    "scannedRecord" : scannedRecord,
  };
 }
 
 void uploadScannedRecord(Record record) async{ 
   var db = await DatabaseConnection().database;
-  await db.insert("scannedRecord", record.toMap());
+  await db.insert("Archive", record.toMap());
 }
 
 Future<List<Record>> getRecords() async {
@@ -36,4 +34,20 @@ Future<List<Record>> getRecords() async {
     record.add(Record.fromMap(map[i]));
   }
   return record;
+}
+
+class Converter{
+  static Image imageFromBase64String(String base64String) {
+    return Image.memory(
+      base64Decode(base64String),
+    );
+  }
+ 
+  static Uint8List dataFromBase64String(String base64String) {
+    return base64Decode(base64String);
+  }
+ 
+  static String base64String(Uint8List data) {
+    return base64Encode(data);
+  }
 }

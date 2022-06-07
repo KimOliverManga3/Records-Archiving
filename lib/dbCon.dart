@@ -7,11 +7,19 @@ class DatabaseConnection{
 
   static Database? _database;
 
-  Future<Database> get database async => _database ??= await _initDatabase;
+  //Future<Database> get database async => _database ??= await _initDatabase;
 
-  Future<Database> get _initDatabase async{
-    Directory docsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(docsDirectory.path, 'RecordsArchiving.db');
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+
+    _database = await _initDatabase('RecordsArchiving.db');
+
+    return _database!;
+  }
+
+  Future<Database>  _initDatabase(String dbName) async{
+    String databasePath = await getDatabasesPath();
+    String path = join(databasePath, dbName);
     return await openDatabase(
       path,
       version: 1,
@@ -20,8 +28,8 @@ class DatabaseConnection{
   }
 
   Future _onCreate(Database db, int version) async{
-    await db.execute('''
-      CREATE TABLE archiving(
+    return await db.execute('''
+      CREATE TABLE Archive(
         archiveID VARCHAR KEY,
         scannedRecords BLOB,
         dateStored Date
