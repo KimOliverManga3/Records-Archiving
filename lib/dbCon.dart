@@ -1,8 +1,6 @@
 import 'package:records_archiving/archive.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 class DatabaseConnection{
 
@@ -23,7 +21,7 @@ class DatabaseConnection{
   }
 
   Future<void> onCreate(Database db, int version) async{
-    await db.execute('CREATE TABLE Archive(recordID INTEGER PRIMARY KEY AUTOINCREMENT, recordType VARCHAR, ownerName VARCHAR, dateStored VARCHAR, document BLOB)');
+    await db.execute('CREATE TABLE Archive(recordID INTEGER PRIMARY KEY, recordType VARCHAR, ownerName VARCHAR, dateStored VARCHAR, document BLOB)');
   }
 
   void insertContact(Record document) async{ 
@@ -55,10 +53,4 @@ class DatabaseConnection{
     });
 
   }
-
-  // getContacts2() async {
-  //   final db = await database;
-  //   final  maps = await db.query('contacts');
-  //   inspect(maps);
-  // }
 }

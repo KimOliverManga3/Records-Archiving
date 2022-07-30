@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
@@ -9,6 +7,7 @@ import 'package:records_archiving/expandedDoc.dart';
 import 'archive.dart';
 import 'dbCon.dart';
 import 'main.dart';
+import 'package:intl/intl.dart';
 
 
 class FrontPageState extends State<FrontPage> {
@@ -69,7 +68,7 @@ class FrontPageState extends State<FrontPage> {
       foregroundColor: Color(0xff000000),
       onPressed: () async {
         await Navigator.push(context,
-          MaterialPageRoute(builder: (context) => AddDetails(docType: '', ownerName: '', doc: null, dateStored: '', recordID: '',))
+          MaterialPageRoute(builder: (context) => AddDetails(docType: '', ownerName: '', doc: Uint8List.fromList([]), dateStored: DateFormat('yyyy-MM-dd').format(DateTime.now()), recordID: '',))
         );
         setState(() {});
       }

@@ -10,9 +10,7 @@ class RecordDetails extends StatefulWidget{
   
   @override
   RecordDetailsState createState() => RecordDetailsState(selectedDocument: selectedDocument);
-
 }
-
 
 class RecordDetailsState extends State<RecordDetails> {
 

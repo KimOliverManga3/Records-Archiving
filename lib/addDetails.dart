@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:records_archiving/main.dart';
 import 'dbCon.dart';
 import 'archive.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 class AddDetails extends StatefulWidget{
 
@@ -21,8 +21,9 @@ class AddDetails extends StatefulWidget{
 class AddDetailsState extends State<AddDetails> {
 
   String recordType = '', ownerName = '', recordID = '', buttonText = 'Save';
-  String dateStored = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  late final Uint8List tempDoc;
+  String dateStored = '';
+  Uint8List tempDoc;
+  File? imageToDisplay;
   int recordIDtoParse = 0;
 
   final recordNameController = TextEditingController();
@@ -63,10 +64,10 @@ class AddDetailsState extends State<AddDetails> {
       return null;
     } else{
       File imageFile = File(image.path);
-      setState(() async {
-        tempDoc = await imageFile.readAsBytes();
+      setState(()  {
+        imageToDisplay = imageFile;
       });
-      
+      tempDoc = await imageFile.readAsBytes();
       var db = await DatabaseConnection().database;
       while(checker == false){
         var temp = await db.rawQuery("SELECT * FROM Archive WHERE recordID = '$tempID'");
@@ -74,6 +75,7 @@ class AddDetailsState extends State<AddDetails> {
           tempID++;
         }
         else{
+          
           recordIDtoParse = tempID;
           break;
         }
@@ -166,7 +168,7 @@ class AddDetailsState extends State<AddDetails> {
               const SizedBox(height: 20),
               ClipRRect(
                 borderRadius: BorderRadius.circular(50),
-                child: tempDoc.isNotEmpty ? Image.memory(tempDoc, width: 150,): const Text('No Image Selected.', style: TextStyle(color: Colors.white),),
+                child: imageToDisplay != null ? Image.file(imageToDisplay!, width: 150,) : imageToDisplay == null && tempDoc.isNotEmpty ? Image.memory(tempDoc, width: 150,): const Text('No Image Selected.', style: TextStyle(color: Colors.white),),
               ),
 
               const SizedBox(height: 30),
@@ -189,20 +191,19 @@ class AddDetailsState extends State<AddDetails> {
                           ownerName = ownerNameController.text;
                           recordType = recordNameController.text;
                           
-                          final snackBar = SnackBar(content: Text("Record Added"), backgroundColor: Colors.green,);
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MainPage()));
                           Record record = Record(recordID: recordIDtoParse.toString(), recordType: recordType, dateStored: dateStored, ownerName: ownerName,  document: tempDoc);
                           DatabaseConnection().insertContact(record);
                           ownerNameController.clear();
                           recordNameController.clear();
                       }
-                      else if(ownerName.isNotEmpty && recordType.isNotEmpty && tempDoc.isNotEmpty && buttonText == 'Update'){
-                        final snackBar = SnackBar(content: Text("Record Updated"), backgroundColor: Colors.green,);
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      else if(ownerName.isNotEmpty && recordType.isNotEmpty && tempDoc.isNotEmpty && buttonText == 'Update'){               
                         Record record = Record(recordID: recordIDtoParse.toString(), recordType: recordType, dateStored: dateStored, ownerName: ownerName,  document: tempDoc);
                         DatabaseConnection().updateRecord(record, int.parse(recordID));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MainPage()));
                         ownerNameController.clear();
                         recordNameController.clear();
+                        
                       }
                     },
                   )
